@@ -1,0 +1,200 @@
+<%
+    var pageTitle = { pageTitle:"学生信息" }
+%>
+<!-- art-template分布模板（模板片段化） -->
+{{include "../layout_header.html" pageTitle}}
+<div class="container-fluid">
+    <div class="page-header">
+        <h2 class="text-center text-primary">学生信息</h2>
+    </div>
+    <!-- 表格上方查询按钮
+         action:提交到服务器的地址，name:提供给后台取值
+         form:通过get请求把表单填写的数据提交到服务器的/StuInfo/Query，表单提交会跳转页面，而此处不需要跳转，路由中"/List"与"/Query"耦合度太高，需要精简代码，数据提交改为/StuInfo/List
+    -->
+    <form class="form-inline" style="margin: 8px 0px" action="/StuInfo/List" method="GET">
+        <!-- <input type="text" style="display: none;" value="1" name="pageIndex">不为空pageIndex默认为1 -->
+        <input type="hidden" value="1" name="pageIndex">
+        <div class="form-group">
+            <label class="control-label">姓名</label>
+            <input type="text" class="form-control" placeholder="请输入姓名查询" name="sname">
+        </div>
+        <div class="form-group">
+            <label class="control-label">学号</label>
+            <input type="text" class="form-control" placeholder="请输入学号查询" name="sid">
+        </div>
+        <div class="form-group">
+            <label class="control-label">性别</label>
+            <select class="form-control" name="ssex">
+                <option value="男">男</option>
+                <option value="女">女</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="control-label">班级</label>
+            <select class="form-control" id="" name="cid">
+                {{each classInfoList item index}}
+                <option value="{{item.cid}}">{{item.cname}}</option>
+                {{/each}}
+            </select>
+        </div>
+        <div class="form-group">
+            <!-- 提交表单 -->
+            <button type="submit" class="btn btn-primary">
+                <span class="glyphicon glyphicon-search"></span> 查询
+            </button>
+        </div>
+    </form>
+    <!-- 表格上方新增，编辑，删除，导出为Excel按钮 -->
+    <div class="btn-group">
+        <a href="/StuInfo/addStuInfo" type="button" class="btn btn-primary">
+            <span class="glyphicon glyphicon-plus"></span> 新增
+        </a>
+        <button type="button" class="btn btn-warning btn-edit">
+            <span class="glyphicon glyphicon-pencil"></span> 编辑
+        </button>
+        <button type="button" class="btn btn-danger btn-delete">
+            <span class="glyphicon glyphicon-trash"></span> 删除
+        </button>
+        <button type="button" class="btn btn-info" onclick="window.open('/StuInfo/exportToExcel'+location.search)">
+            <span class="glyphicon glyphicon-export"></span> 导出为Excel
+        </button>
+    </div>
+    <hr>
+    <!-- 学生信息表格 -->
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <div class="panel-title">
+                <span class="glyphicon glyphicon-globe"></span> 学生信息
+            </div>
+        </div>
+        <div class=" panel-body" style="padding:5px">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-bordered">
+                    <tr>
+                        <th>
+                            <input type="checkbox" id="ckAll" data-toggle="ckAll" data-target="[name='ck']">
+                            <label for="ckAll">全选</label>
+                        </th>
+                        <th>姓名</th>
+                        <th>学号</th>
+                        <th>照片</th>
+                        <th>性别</th>
+                        <th>生日</th>
+                        <th>民族</th>
+                        <th>身份证号</th>
+                        <th>邮箱</th>
+                        <th>电话</th>
+                        <th>所属班级</th>
+                        <th>家庭住址</th>
+                    </tr>
+                    {{each stuInfoList item index}}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="ck" value="{{item.sid}}">
+                        </td>
+                        <td>{{item.sname}}</td>
+                        <td>{{item.sid}}</td>
+                        <td>
+                            {{if item.sphoto}}
+                            <img class="stuImg" src="{{item.sphoto}}" alt="学生图片" style="height: 40px;">
+                            {{else}}
+                            暂无照片
+                            {{/if}}
+                        </td>
+                        <td>
+                            {{if item.ssex=="男"}}
+                            <svg class="icon" style="color: blue;font-size: 20px;">
+                                <use xlink:href="#iconnanhai"></use>
+                            </svg>
+                            {{else if item.ssex=="女"}}
+                            <svg class="icon" style="color: blue;font-size: 20px;">
+                                <use xlink:href="#iconnvhai"></use>
+                            </svg>
+                            {{/if}}
+                        </td>
+                        <td>{{item.sbirthday}}</td>
+                        <td>{{item.snation}}</td>
+                        <td>{{item.sIDCard}}</td>
+                        <td>{{item.smail}}</td>
+                        <td>{{item.stel}}</td>
+                        <td>{{item.cname}}</td>
+                        <td>{{item.saddr.replace(/\//g,"")}}</td>
+                    </tr>
+                    {{/each}}
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- 导入通用分页 -->
+    {{include "../layout_pagination.html"}}
+</div>
+<script>
+    $(function () {
+        
+        // layer相册层，图片预览
+        $(".stuImg").click(function () {
+            // 拿到当前图片的地址
+            imgSrc = $(this).attr("src");
+            // 调用插件方法
+            layer.photos({
+                photos: {
+                    data: [{
+                        src: imgSrc
+                    }]
+                },
+                //动画效果从1到6
+                anim: 4
+            });
+        });
+
+        // 删除按钮
+        $(".btn-delete").click(function () {
+            var ckLength = $("[name='ck']:checked").length;
+            if (ckLength <= 0) {
+                layer.alert("请选择要删除的数据");
+            } else {
+                layer.confirm("确认删除？", function (index) {
+                    // index代表弹出层的编号ID，根据这个ID关闭这个弹出层
+                    layer.close(index);
+                    // 选中的所有ck的value
+                    var cksValue = $("[name='ck']:checked").toArray().map(function (
+                        item) {
+                        return item.value;
+                    });
+                    $.get("/StuInfo/deleteStu", {
+                        // Ajax向后面传递要删除的数组（也可以序列化成字符串JSON.stringify()，后台接收以后再JSON.prase()）
+                        cksValue: cksValue
+                    }, function (data) {
+                        //判断后台返回过来的值data
+                        if (data == true) {
+                            layer.alert("删除成功", function (index) {
+                                //index代表弹出层的编号ID，现在根据这个ID关闭这个弹出层
+                                layer.close(index);
+                                //重新刷新这个页面
+                                location.reload();
+                            });
+                        } else {
+                            layer.alert("删除失败");
+                        }
+                    });
+                });
+            }
+        });
+
+         // 编辑按钮
+         $(".btn-edit").click(function () {
+            var ckLength = $("[name='ck']:checked").length;
+            if (ckLength == 1) {
+                // 拿到选中的这个值
+                var sid = $("[name='ck']:checked").val();
+                // 跳转页面，告诉后台修改哪一条记录,同时返回编辑信息页面而不是回首页，encodeURIComponent地址栏加密
+                location.href = "/StuInfo/editStuInfo?sid=" + sid + "&callBackUrl=" +
+                    encodeURIComponent(location.href);
+            } else {
+                layer.alert("一次只能修改一项数据");
+            }
+        });
+
+    });
+</script>
+{{include "../layout_footer.html"}}

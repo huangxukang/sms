@@ -1,0 +1,27 @@
+<!-- 通用分页，子级模板页默认共享父级模板页的数据，同时父级模板页也可以单独传递数据给子级模板页 -->
+<div class="clearfix">
+    <ul class="pagination pull-right">
+        <!-- art-template原始语法，同时给当前页码加上颜色标注 -->
+        <li><a data-pageindex="1" href="#">首页</a></li>
+        <%for(var i=pageModel.pageStart;i<=pageModel.pageEnd;i++){%>
+        <li class="{{pageModel.pageIndex==i?'active':''}}"><a data-pageindex="{{i}}" href="#">{{i}}</a></li>
+        <%}%>
+        <li><a data-pageindex="{{pageModel.pageCount}}">尾页</a></li>
+    </ul>
+</div>
+<script>
+    if (location.search == "") {
+        $(".pagination>li>a").each(function (index, ele) {
+            var pageindex = $(this).attr("data-pageindex");
+            $(this).attr("href", location.pathname + "?pageindex=" + pageindex);
+        });
+    } else {
+        $(".pagination>li>a").each(function (index, ele) {
+            var pageindex = $(this).attr("data-pageindex");
+            // 只需要把pageIndex更换为具体的值
+            var s = new URLSearchParams(location.search);
+            s.set("pageIndex", pageindex);
+            $(this).attr("href", location.pathname + "?" + s.toString());
+        });
+    }
+</script>

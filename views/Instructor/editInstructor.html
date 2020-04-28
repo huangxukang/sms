@@ -1,0 +1,64 @@
+<%
+    var pageTitle = { pageTitle:"编辑辅导员信息" }
+%>
+<!-- art-template分布模板（模板片段化） -->
+{{include "../layout_header.html" pageTitle}}
+<div class=" container">
+    <div class=" page-header">
+        <h2 class=" text-center text-primary ">编辑辅导员信息</h2>
+    </div>
+    <!-- enctype全称是EncodeType，指定将数据回发到服务器时浏览器使用的编码类型,默认值是application/x-www-form-urlencoded -->
+    <form class=" form-horizontal" action="/Instructor/doEditInstructor" method="POST"
+        enctype="application/x-www-form-urlencoded">
+        <!-- 编辑成功后重定向到当前页面 -->
+        <input type="hidden" value="{{callBackUrl}}" name="callBackUrl">
+        <div class=" form-group">
+            <label class=" control-label col-sm-3">姓名</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入姓名" value="{{instructor.instructorname}}"
+                    name="instructorname">
+            </div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-3">性别</label>
+            <div class=" col-sm-7">
+                <select class=" form-control" name="instructorsex">
+                    <option value="男" {{instructor.instructorsex=="男"?'selected':null}}>男</option>
+                    <option value="女" {{instructor.instructorsex=="女"?'selected':null}}>女</option>
+                </select>
+            </div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-3">电话</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入电话" value="{{instructor.instructortel}}"
+                    name="instructortel">
+            </div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-3">邮箱</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入邮箱" value="{{instructor.instructoremail}}"
+                    name="instructoremail">
+            </div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-3">身份证号</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入身份证号" value="{{instructor.instructorIDCard}}"
+                    name="instructorIDCard">
+            </div>
+        </div>
+        <div class=" form-group">
+            <div class=" col-sm-7 col-sm-offset-3">
+                <button type="submit" class=" btn btn-primary" id="btnSave">
+                    <span class=" glyphicon glyphicon-floppy-save"></span> 保存数据
+                </button>
+                <a href="{{callBackUrl||'/Instructor/List'}}" class=" btn btn-danger">
+                    <span class=" glyphicon glyphicon-arrow-left"></span> 返回列表
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{{include "../layout_footer.html"}}

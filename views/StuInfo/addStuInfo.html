@@ -1,0 +1,183 @@
+<%
+    var pageTitle = { pageTitle:"新增学生信息" }
+%>
+<!-- art-template分布模板（模板片段化） -->
+{{include "../layout_header.html" pageTitle}}
+<div class=" container">
+    <div class=" page-header">
+        <h2 class=" text-center text-primary ">新增学生信息</h2>
+    </div>
+    <!-- enctype全称是EncodeType，指定将数据回发到服务器时浏览器使用的编码类型,默认值是application/x-www-form-urlencoded -->
+    <form class=" form-horizontal" action="/StuInfo/doAddStuInfo" method="POST" enctype="multipart/form-data"
+        id="addStuInfo">
+        <!-- 添加隐藏域，保存好拼接好的地址信息，随表单提交后台 -->
+        <input type="hidden" value="" id="saddr" name="saddr">
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">姓名</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入姓名" data-rule-required="true" name="sname">
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">学号</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入学号" data-rule-required="true" id="sid"
+                    name="sid">
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <label for="" class=" control-label col-sm-2">性别</label>
+            <div class=" col-sm-7">
+                <select class=" form-control" name="ssex">
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select>
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">出生日期</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请点击选择出生日期" readonly onclick="WdatePicker()"
+                    data-rule-required="true" name="sbirthday">
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">民族</label>
+            <div class=" col-sm-7">
+                <select class="form-control" name="snation">
+                    {{each nationList item index}}
+                    <option value="{{item}}">{{item}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">身份证号</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入身份证号" data-rule-required="true" name="sIDCard">
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">邮箱</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入邮箱" data-rule-required="true"
+                    data-rule-email="true" name="smail">
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">手机号</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入手机号" data-rule-required="true" name="stel">
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">所属班级</label>
+            <div class=" col-sm-7">
+                <select class="form-control" name="cid">
+                    {{each classInfoList item index}}
+                    <option value="{{item.cid}}">{{item.cname}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2">学生图片</label>
+            <div class="col-sm-7">
+                <input type="file" style="display: none;" id="sphoto" name="sphoto" accept="image/*">
+                <button type="button" class="btn btn-primary btn-md"
+                    onclick="document.getElementById('sphoto').click()">
+                    <span class="glyphicon glyphicon-cloud-upload"></span>上传图片
+                </button>
+                <img src="" alt="" id="stuImg" style="height:40px">
+            </div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">家庭住址</label>
+            <div class=" col-sm-7">
+                <div class="row" data-toggle="distpicker">
+                    <div class="col-xs-4">
+                        <select class="form-control" id="province" data-province="湖北省"></select>
+                    </div>
+                    <div class="col-xs-4">
+                        <select class="form-control" id="city" data-city="武汉市"></select>
+                    </div>
+                    <div class="col-xs-4">
+                        <select class="form-control" id="district" data-district="洪山区"></select>
+                    </div>
+                    <div class="col-xs-12" style="margin-top: 8px;">
+                        <textarea class="form-control" cols="30" rows="3" placeholder="详细地址" data-rule-required="true"
+                            id="detailAddr"></textarea>
+                    </div>
+                    <div class=" col-xs-12"></div>
+                </div>
+            </div>
+        </div>
+        <div class=" form-group">
+            <div class=" col-sm-7 col-sm-offset-2">
+                <button type="submit" class=" btn btn-primary" id="btnSave">
+                    <span class=" glyphicon glyphicon-floppy-save"></span>保存数据
+                </button>
+                <a href="/StuInfo/List" type="button" class=" btn btn-danger">
+                    <span class=" glyphicon glyphicon-arrow-left"></span>返回列表
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="/public/js/distpicker.js" type="text/javascript"></script>
+<script>
+    $(function () {
+
+        // 表单验证
+        $("#addStuInfo").validate({
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent().next());
+            },
+            errorClass: "text-danger"
+        });
+
+        // 保存数据按钮
+        $("#btnSave").click(function () {
+            // 将地址进行拼接，得到的值提交到后台，后台通过req.query.saddr拿到值（事件先于响应）
+            var saddr = [$("#province").val(), $("#city").val(), $("#district").val(), $(
+                "#detailAddr").val()].join("/");
+            $("#saddr").val(saddr);
+        });
+
+        // 触发失焦事件，检测学号是否重复
+        $("#sid").blur(function () {
+            var sid = $(this).val();
+            if (sid) {
+                // sid有值，将这个值发送到后台，后台在数据库检测是否已经存在
+                // ajax无刷新请求发送到服务器，返回值在data里面
+                $.get("/StuInfo/checkSid?sid=" + sid, function (data) {
+                    if (data == true) {
+                        // 存在当前学号，清空输入框并弹框提示
+                        $("#sid").val("");
+                        alert("当前学号已存在");
+                    }
+                });
+            }
+        });
+
+        // 将图片转base64以后在img标签里面预览
+        $("#sphoto").change(function () {
+            var file = this.files[0];
+            // h5的FileReader读取文件
+            var fr = new FileReader();
+            fr.onload = function (e) {
+                $("#stuImg").attr("src", e.target.result);
+            }
+            fr.readAsDataURL(file);
+        });
+
+    });
+</script>
+{{include "../layout_footer.html"}}

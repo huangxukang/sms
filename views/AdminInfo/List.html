@@ -1,0 +1,72 @@
+<%
+    var pageTitle = { pageTitle:"管理员信息" }
+%>
+<!-- art-template分布模板（模板片段化） -->
+{{include "../layout_header.html" pageTitle}}
+<div class="container-fluid">
+    <div class="page-header">
+        <h2 class="text-center text-primary">管理员信息</h2>
+    </div>
+    <!-- 表格上方查询按钮
+         action:提交到服务器的地址，name:提供给后台取值
+         form:通过get请求把表单填写的数据提交到服务器的/StuInfo/Query，表单提交会跳转页面，而此处不需要跳转，路由中"/List"与"/Query"耦合度太高，需要精简代码，数据提交改为/AdminInfo/List
+    -->
+    <form class="form-inline" style="margin: 10px 0px" action="/AdminInfo/List" method="GET">
+        <div class="form-group">
+            <label class="control-label">管理员帐号</label>
+            <input type="text" class="form-control" placeholder="请输入管理员帐号查询" name="adminid">
+        </div>
+        <div class="form-group">
+            <label class="control-label">管理员姓名</label>
+            <input type="text" class="form-control" placeholder="请输入管理员姓名查询" name="adminname">
+        </div>
+        <div class="form-group">
+            <!-- submit提交表单 -->
+            <button type="submit" class="btn btn-primary">
+                <span class="glyphicon glyphicon-search"></span> 查询
+            </button>
+        </div>
+    </form>
+    <!-- 表格上方新增，导出为Excel按钮 -->
+    <div class="btn-group">
+        <a href="/AdminInfo/addAdminInfo" type="button" class="btn btn-primary">
+            <span class="glyphicon glyphicon-plus"></span> 新增
+        </a>
+        <button type="button" class="btn btn-info" onclick="window.open('/AdminInfo/exportToExcel'+location.search)">
+            <span class="glyphicon glyphicon-export"></span> 导出为Excel
+        </button>
+    </div>
+    <hr>
+    <!-- 管理员信息表格 -->
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <div class="panel-title">
+                <span class="glyphicon glyphicon-globe"></span> 管理员信息
+            </div>
+        </div>
+        <div class=" panel-body" style="padding:5px">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-bordered">
+                    <tr>
+                        <th>管理员帐号</th>
+                        <th>管理员密码</th>
+                        <th>管理员姓名</th>
+                    </tr>
+                    {{each adminInfoList item index}}
+                    <%
+                        var arr = [];
+                        arr.length = item.adminpwd.length;
+                        arr.fill("*");
+                    %>
+                    <tr>
+                        <td>{{item.adminid}}</td>
+                        <td>{{arr.join('')}}</td>
+                        <td>{{item.realName}}</td>
+                    </tr>
+                    {{/each}}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{{include "../layout_footer.html"}}

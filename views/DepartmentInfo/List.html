@@ -1,0 +1,127 @@
+<%
+    var pageTitle = { pageTitle:"院系信息" }
+%>
+<!-- art-template分布模板（模板片段化） -->
+{{include "../layout_header.html" pageTitle}}
+<div class="container-fluid">
+    <div class="page-header">
+        <h2 class="text-center text-primary">院系信息</h2>
+    </div>
+    <!-- 表格上方查询按钮
+         action:提交到服务器的地址，name:提供给后台取值
+         form:通过get请求把表单填写的数据提交到服务器的/StuInfo/Query，表单提交会跳转页面，而此处不需要跳转，路由中"/List"与"/Query"耦合度太高，需要精简代码，数据提交改为/AdminInfo/List
+    -->
+    <form class="form-inline" style="margin: 10px 0px" action="/DepartmentInfo/List" method="GET">
+        <div class="form-group">
+            <label class="control-label">院系名称</label>
+            <input type="text" class="form-control" placeholder="请输入院系名称查询" name="dname">
+        </div>
+        <div class="form-group">
+            <!-- submit提交表单 -->
+            <button type="submit" class="btn btn-primary">
+                <span class="glyphicon glyphicon-search"></span> 查询
+            </button>
+        </div>
+    </form>
+    <!-- 表格上方新增，导出为Excel按钮 -->
+    <div class="btn-group">
+        <a href="/DepartmentInfo/addDepartmentInfo" type="button" class="btn btn-primary">
+            <span class="glyphicon glyphicon-plus"></span> 新增
+        </a>
+        <button type="button" class="btn btn-warning btn-edit">
+            <span class="glyphicon glyphicon-pencil"></span> 编辑
+        </button>
+        <button type="button" class="btn btn-danger btn-delete">
+            <span class="glyphicon glyphicon-trash"></span> 删除
+        </button>
+        <button type="button" class="btn btn-info" onclick="window.open('/DepartmentInfo/exportToExcel'+location.search)">
+            <span class="glyphicon glyphicon-export"></span> 导出为Excel
+        </button>
+    </div>
+    <hr>
+    <!-- 院系信息信息表格 -->
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <div class="panel-title">
+                <span class="glyphicon glyphicon-globe"></span> 院系信息
+            </div>
+        </div>
+        <div class=" panel-body" style="padding:5px">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-bordered">
+                    <tr>
+                        <th>
+                            <input type="checkbox" id="ckAll" data-toggle="ckAll" data-target="[name='ck']">
+                            <label for="ckAll">全选</label>
+                        </th>
+                        <th>院系名称</th>
+                        <th>院长姓名</th>
+                        <th>院长电话</th>
+                    </tr>
+                    {{each departmentInfoList item index}}
+                    <tr>
+                        <td>
+                            <input type="checkbox" name="ck" value="{{item.did}}">
+                        </td>
+                        <td>{{item.dname}}</td>
+                        <td>{{item.manager}}</td>
+                        <td>{{item.manager_tel}}</td>
+                    </tr>
+                    {{/each}}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+
+        // 删除按钮
+        $(".btn-delete").click(function () {
+            var ckLength = $("[name='ck']:checked").length;
+            if (ckLength <= 0) {
+                layer.alert("请选择要删除的数据");
+            } else {
+                layer.confirm("你确定要删除吗？", function (index) {
+                    //index代表弹出层的编号ID，现在根据这个ID关闭这个弹出层
+                    layer.close(index);
+                    //选中的所有ck的value
+                    var cksValue = $("[name='ck']:checked").toArray().map(function (item) {
+                        return item.value;
+                    });
+                    $.get("/DepartmentInfo/deleteByDid", {
+                        cksValue: cksValue
+                    }, function (data) {
+                        //判断后台返回过来的值data
+                        if (data == true) {
+                            layer.alert("删除成功", function (index) {
+                                //index代表弹出层的编号ID，现在根据这个ID关闭这个弹出层
+                                layer.close(index);
+                                //重新刷新这个页面
+                                location.reload();
+                            });
+                        } else {
+                            layer.alert("删除失败");
+                        }
+                    });
+                })
+            }
+        });
+
+        // 编辑按钮
+        $(".btn-edit").click(function () {
+            var ckLength = $("[name='ck']:checked").length;
+            if (ckLength == 1) {
+                // 拿到选中的这个值
+                var did = $("[name='ck']:checked").val();
+                // 跳转页面，告诉后台修改哪一条记录,同时返回编辑信息页面而不是回首页，encodeURIComponent地址栏加密
+                location.href = "/DepartmentInfo/editDepartmentInfo?did=" + did + "&callBackUrl=" +
+                    encodeURIComponent(location.href);
+            } else {
+                layer.alert("一次只能修改一项数据");
+            }
+        });
+
+    })
+</script>
+{{include "../layout_footer.html"}}

@@ -1,0 +1,117 @@
+<%
+    var obj={pageTitle:"欢迎登录学生管理系统"}
+%>
+<!-- art-template分布模板（模板片段化） -->
+{{include "../layout_header.html",obj}}
+<nav class=" navbar navbar-default navbar-fixed-top" style="background-color: white;">
+    <div class=" container-fluid">
+        <div class=" navbar-header">
+            <a href="#" class=" navbar-brand" style="color:black;font-weight: bold;font-style: oblique;">学生信息管理系统网页版</a>
+        </div>
+        <ul class=" nav navbar-nav navbar-right">
+            <li><a href="#">欢迎您登录:&nbsp;<span style="color: blue;font-size: 17px;">{{userName}}</span></a></li>
+            <li><a href="/AdminInfo/logOut">退出系统</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="center">
+    <div class="left">
+        <!-- 加载菜单 -->
+        {{include "./layout_menu.html"}}
+    </div>
+    <div class="right">
+        <!-- onload是W3C标准事件 onreadystatechange是兼容性事件处理 -->
+        <iframe onload=" iframeLoad()" onreadystatechange="iframeStataChange(this)" src="" frameborder="0"
+            name="mainFrame" id="mainFrame"></iframe>
+    </div>
+    <!-- 广告移动 -->
+    <img src="../../public/img/huangxukanglogo.png" class="img1">
+</div>
+<style>
+    .center {
+        position: fixed;
+        top: 50px;
+        bottom: 0px;
+        width: 100%;
+        background-image: url("../../public/img/mainbg.png");
+        background-size: 100% 100%;
+    }
+
+    .center .left {
+        width: 200px;
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        /* border-right: 1px solid #ececec; */
+    }
+
+    .center .right {
+        position: absolute;
+        left: 200px;
+        top: 0px;
+        bottom: 0px;
+        right: 0px;
+    }
+
+    /* 广告图片 */
+    img {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 9999;
+        border: 1px solid lightgray;
+        border-radius: 6px;
+        opacity: 0.8;
+    }
+
+    img:hover {
+        box-shadow: 0 0 10px 5px;
+        transform: scale(1.2);
+    }
+</style>
+<script>
+    // 当iframe加载完毕，关闭加载动画
+    function iframeLoad() {
+        layer.closeAll();
+    }
+    // 兼容性事件处理，关闭加载动画
+    function iframeStataChange(obj) {
+        if (obj.readyState == "complete") {
+            layer.closeAll();
+        }
+    }
+
+    // 广告移动
+    var xspeed = 5;
+    var yspeed = 5;
+    var imgId;
+
+    function imgMove() {
+        imgId = setInterval(function () {
+            var top = $(".img1").css("top");
+            var right = $(".img1").css("right");
+            var bottom = $(".img1").css("bottom");
+            var left = $(".img1").css("left");
+            if (xspeed > 0 && parseInt(right) <= 0 || xspeed < 0 && parseInt(left) <= 0) {
+                xspeed = xspeed * (-1);
+            }
+            if (yspeed > 0 && parseInt(bottom) <= 0 || yspeed < 0 && parseInt(top) <= 0) {
+                yspeed = yspeed * (-1);
+            }
+            left = parseInt(left) + xspeed;
+            top = parseInt(top) + yspeed;
+            $(".img1").css({
+                left: left + "px",
+                top: top + "px"
+            });
+        }, 200);
+    }
+    imgMove();
+    $(".img1").hover(function () {
+        clearInterval(imgId);
+    }, function () {
+        imgMove();
+    })
+</script>
+{{include "../layout_footer.html"}}

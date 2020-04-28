@@ -1,0 +1,278 @@
+<%
+    var obj={pageTitle:"欢迎登录学生信息管理系统"}
+%>
+<!-- art-template分布模板（模板片段化） -->
+{{include "../layout_header.html" obj}}
+<script src="https://g.alicdn.com/dingding/dinglogin/0.0.5/ddLogin.js"></script>
+<style type="text/css">
+    /* 顶部logo信息栏 */
+    .logoDiv {
+        padding: 8px 0;
+        width: 1200px;
+        margin: auto;
+        /* border: 1px solid red; */
+    }
+
+    /* logo信息栏下方整体背景区 */
+    .bgLogin {
+        max-width: 100%;
+        height: 600px;
+        background-image: url("/public/img/loginbg.png");
+        background-size: 100% 100%;
+        /* border: 1px solid black; */
+    }
+
+    /* 整体背景区除去两侧留白居中部分 */
+    .innerBgLogin {
+        width: 1200px;
+        height: 100%;
+        margin: auto;
+        /* border: 1px solid blue; */
+    }
+
+    @media only screen and (max-width:1200px) {
+
+        .logoDiv,
+        .innerBgLogin {
+            width: 100%;
+        }
+    }
+
+    .loginBox {
+        width: 390px;
+        background-color: white;
+        float: right;
+        margin-top: 50px;
+        border-radius: 10px;
+        height: 440px;
+        border: 1px solid gray;
+        opacity: 0.7;
+    }
+
+    .loginType {
+        height: 75px;
+        margin: 0px;
+        padding: 0px;
+        list-style-type: none;
+        border-bottom: 1px solid lightgray;
+        box-sizing: border-box;
+    }
+
+    .loginType>li {
+        height: 100%;
+        float: left;
+        width: 50%;
+        text-align: center;
+        line-height: 75px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    .loginType>li.active {
+        color: #37a6f4;
+        border-bottom: 3px solid #37a6f4;
+    }
+
+    .loginContent {
+        height: 375px;
+    }
+
+    .loginByUser {
+        box-sizing: border-box;
+        padding: 20px;
+    }
+
+    .loginByQRCode {
+        width: 100%;
+        height: 100%;
+        display: none;
+    }
+</style>
+<div class=" logoDiv">
+    <a href="http://www.baidu.com">
+        <img src="/public/img/huangxukanglogo.png" alt="" style="height: 45px;">
+    </a>
+    <span class="h4" style="margin-left: 18px;color: blue;font-style: oblique;">学生信息管理系统网页版</span>
+</div>
+<div class="bgLogin">
+    <div class="innerBgLogin clearfix">
+        <div class="loginBox">
+            <ul class="loginType clearfix">
+                <li data-target="#loginByQRCode">扫码登录</li>
+                <li class="active" data-target="#loginByUser">账号登录</li>
+            </ul>
+            <div class="loginContent">
+                <!-- 账号登录 -->
+                <div class="loginByUser" id="loginByUser">
+                    <form action="/AdminInfo/checkLogin" method="POST" id="loginForm">
+                        <div class=" form-group">
+                            <div class=" input-group">
+                                <div class=" input-group-addon">
+                                    <span class="glyphicon glyphicon-tasks"></span>
+                                </div>
+                                <input type="text" class=" form-control input-lg" placeholder="请输入账号"
+                                    data-rule-required="true" name="userName">
+                            </div>
+                            <div class=" col-sm-12"></div>
+                        </div>
+                        <div class=" form-group">
+                            <div class=" input-group">
+                                <div class=" input-group-addon">
+                                    <span class="glyphicon glyphicon-lock"></span>
+                                </div>
+                                <input type="password" class=" form-control input-lg" placeholder="请输入密码"
+                                    data-rule-required="true" name="userPwd">
+                            </div>
+                            <div class=" col-sm-12"></div>
+                        </div>
+                        <div class=" form-group">
+                            <div class=" input-group">
+                                <div class=" input-group-addon">
+                                    <span class="glyphicon glyphicon-user"></span>
+                                </div>
+                                <select class=" form-control input-lg">
+                                    <option value="">管理员</option>
+                                    <option value="">老师</option>
+                                    <option value="">学生</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class=" form-group">
+                            <div class=" row">
+                                <div class=" col-xs-8">
+                                    <input type="text" class=" form-control input-lg" placeholder="请输入验证码"
+                                        id="VCodeTxt">
+                                </div>
+                                <div class=" col-xs-4">
+                                    <img src="/Main/getVCode?" alt="" style="width: 100%;cursor: pointer;"
+                                        id="VCodeImg">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-block btn-lg" id="btnLogin">登 录</button>
+                        </div>
+                        <!-- QQ登录 -->
+                        <div class=" form-group text-center">
+                            <svg class="icon" style="font-size: 28px;cursor:pointer" title="通过QQ登陆" id="loginByQQ">
+                                <use xlink:href="#iconQQ"></use>
+                            </svg>
+                        </div>
+                    </form>
+                </div>
+                <!-- 钉钉扫码登录 -->
+                <div class="loginByQRCode" id="loginByQRCode">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<p style="text-align: center;font-size: 18px;margin-top: 8px;">Copyright &copy; 2019 - 2020 黄旭康</p>
+<script>
+    /*
+     * 解释一下goto参数，参考以下例子：
+     * var url = encodeURIComponent('http://localhost.me/index.php?test=1&aa=2');
+     * var goto = encodeURIComponent('https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=appid&response_type=code&scope=snsapi_login&state=STATE&redirect_uri='+url)
+     */
+    var url = encodeURIComponent('http://jx.softeem.xin/Main/fromDing');
+    var goto = encodeURIComponent(
+        'https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=dingoaomi3uczubhsw1hmr&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=' +
+        url)
+    var obj = DDLogin({
+        // 这里需要你在自己的页面定义一个HTML标签并设置id，例如<div id="login_container"></div>或<span id="login_container"></span>
+        id: "loginByQRCode",
+        // 请参考注释里的方式
+        goto: goto,
+        // width和height不代表二维码大小，二维码大小是固定的210px*210px
+        width: "365",
+        height: "375",
+        style: "border:none;background-color:#FFFFFF;"
+    });
+    var handleMessage = function (event) {
+        var origin = event.origin;
+        console.log("origin", event.origin);
+        // 判断是否来自ddLogin扫码事件
+        if (origin == "https://login.dingtalk.com") {
+            // 拿到loginTmpCode后就可以在这里构造跳转链接进行跳转了
+            var loginTmpCode = event.data;
+            // 登陆的临时码
+            console.log("loginTmpCode", loginTmpCode);
+            location.href =
+                "https://oapi.dingtalk.com/connect/oauth2/sns_authorize?appid=dingoaomi3uczubhsw1hmr&response_type=code&scope=snsapi_login&state=STATE&redirect_uri=" +
+                url + "&loginTmpCode=" + loginTmpCode
+        }
+    };
+    if (typeof window.addEventListener != 'undefined') {
+        // 通过postMessage发送消息，在接收消息的页面去监听message事件，可以跨域
+        window.addEventListener('message', handleMessage, false);
+    } else if (typeof window.attachEvent != 'undefined') {
+        window.attachEvent('onmessage', handleMessage);
+    }
+</script>
+<script type="text/javascript">
+    $(function () {
+
+        // 切换扫码登录和账号密码验证码登录
+        $(".loginType>li").click(function () {
+            var target = $(this).attr("data-target");
+            $(this).addClass("active").siblings().removeClass("active");
+            // 选择一种登录方式时另一种登录方式隐藏
+            $(target).show().siblings().hide();
+        });
+
+        // 表单验证
+        $("#loginForm").validate({
+            errorClass: "text-danger",
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent().next());
+            }
+        });
+
+        // 点击刷新验证码
+        $("#VCodeImg").click(function () {
+            var src = $(this).attr("src");
+            // 在请求的地址 ? 后面加上一个随机数，这样每次请求的SRC都不一样，这样img就会重新发起请求
+            // 重新发起请求就相当于重新获取验证码
+            $(this).attr("src", src.replace(/\?.*/g, "?" + Math.random()));
+        });
+
+        // 点击登录以后判断验证码是否正确
+        $("#btnLogin").click(function () {
+            var VCodeFlag = false;
+            // 发起ajax请求，把验证码发送到服务器验证
+            $.ajax({
+                // 取消异步，变成同步
+                async: false,
+                method: "get",
+                url: "/AdminInfo/checkVCode?VCode=" + $("#VCodeTxt").val(),
+                success: function (data) {
+                    if (data == true) {
+                        VCodeFlag = true;
+                    } else {
+                        layer.alert("验证码不正确，请重新输入", function (index) {
+                            // index代表弹出层的编号，通过编号关闭弹出窗
+                            layer.close(index);
+                            // 调用上面点击生成图片验证码的方法重新生成验证码
+                            $("#VCodeImg").click();
+                            $("#VCodeTxt").val("");
+                        });
+                    }
+                }
+            });
+            return VCodeFlag;
+            // return false; // 先防止表单提交
+        });
+
+        //通过QQ登陆
+        $("#loginByQQ").click(function () {
+            var redirect_uri = "http://jx.softeem.xin/Main/fromQQ";
+            var url =
+                "https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=101815105&redirect_uri=" +
+                encodeURIComponent(redirect_uri) + "&state=biaogege";
+            location.href = url;
+        });
+        
+    });
+</script>
+{{include "../layout_footer.html"}}

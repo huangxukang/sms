@@ -1,0 +1,97 @@
+<%
+    var pageTitle = { pageTitle:"新增辅导员信息" }
+%>
+<!-- art-template分布模板（模板片段化） -->
+{{include "../layout_header.html" pageTitle}}
+<div class=" container">
+    <div class=" page-header">
+        <h2 class=" text-center text-primary ">新增辅导员信息</h2>
+    </div>
+    <!-- enctype全称是EncodeType，指定将数据回发到服务器时浏览器使用的编码类型,默认值是application/x-www-form-urlencoded -->
+    <form class=" form-horizontal" action="/Instructor/doAddInstructor" method="POST"
+        enctype="application/x-www-form-urlencoded" id="addInstructor">
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">姓名</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入姓名" data-rule-required="true"
+                    name="instructorname">
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <label for="" class=" control-label col-sm-2">性别</label>
+            <div class=" col-sm-7">
+                <select class=" form-control" name="instructorsex">
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                </select>
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">电话</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入电话" data-rule-required="true"
+                    name="instructortel">
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">邮箱</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入邮箱" data-rule-required="true"
+                    data-rule-email="true" name="instructoremail">
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-2">身份证号</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入身份证号" data-rule-required="true"
+                    name="instructorIDCard">
+            </div>
+            <div class=" col-sm-3"></div>
+        </div>
+        <div class=" form-group">
+            <div class=" col-sm-7 col-sm-offset-2">
+                <button type="submit" class=" btn btn-primary" id="btnSave">
+                    <span class=" glyphicon glyphicon-floppy-save"></span>保存数据
+                </button>
+                <a href="/Instructor/List" type="button" class=" btn btn-danger">
+                    <span class=" glyphicon glyphicon-arrow-left"></span>返回列表
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(function () {
+
+        // 表单验证
+        $("#addInstructor").validate({
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent().next());
+            },
+            errorClass: "text-danger"
+        });
+
+        // 触发失焦事件，检测辅导员是否重复
+        $("#instructorname").blur(function () {
+            var instructorname = $(this).val();
+            if (instructorname) {
+                // instructorname有值，将这个值发送到后台，后台在数据库检测是否已经存在
+                // ajax无刷新请求发送到服务器，返回值在data里面
+                $.get("/Instructor/checkInstructorname?instructorname=" + instructorname, function (
+                    data) {
+                    if (data == true) {
+                        // 存在当前辅导员，清空输入框并弹框提示
+                        $("#instructorname").val("");
+                        alert("当前辅导员已存在");
+                    }
+                });
+            }
+        });
+
+    });
+</script>
+{{include "../layout_footer.html"}}

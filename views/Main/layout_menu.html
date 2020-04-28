@@ -1,0 +1,56 @@
+<div class=" panel-group" id="menu">
+    <!-- 数据驱动页面 -->
+    {{each menuConfig item index}}
+    <div class=" panel panel-default">
+        <div class=" panel-heading text-center">
+            <a data-parent="#menu" href="#{{item.id}}" data-toggle="collapse" class="panel-title">{{item.text}}</a>
+        </div>
+        <div class=" collapse panel-collapse" id="{{item.id}}">
+            <div class="panel-body">
+                <ul class="list-group subMenu">
+                    {{each item.subMenu subMenuItem subMenuIndex}}
+                    <li class=" list-group-item text-center"><a href="{{subMenuItem.href}}"
+                            target="mainFrame">{{subMenuItem.text}}</a></li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+</div>
+<style>
+    #menu .panel-body {
+        padding: 0px;
+    }
+
+    #menu .panel-body .list-group {
+        margin: 0;
+    }
+
+    #menu .panel-body .list-group .list-group-item {
+        box-shadow: 0px 8px 8px 3px gray;
+        margin-top: 18px;
+    }
+
+    #mainFrame {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+<script>
+    // 当没有配置href属性时提示
+    $(".subMenu>li>a").click(function () {
+        // 事件先于响应，根据点击事件做一次判断
+        var href = $(this).attr("href");
+        if (href == "#" || href == undefined || href == null || href == "") {
+            layer.msg("你这点钱，我很难办啊......");
+            //不执行后面操作
+            return false;
+        } else {
+            // 调用layer插件产生一个layer加载动画
+            layer.load(0, {
+                shade: falsef
+            });
+        }
+    });
+</script>

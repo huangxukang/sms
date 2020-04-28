@@ -1,0 +1,59 @@
+<%
+    var pageTitle = { pageTitle:"编辑班级信息" }
+%>
+<!-- art-template分布模板（模板片段化） -->
+{{include "../layout_header.html" pageTitle}}
+<div class=" container">
+    <div class=" page-header">
+        <h2 class=" text-center text-primary ">编辑班级信息</h2>
+    </div>
+    <!-- enctype全称是EncodeType，指定将数据回发到服务器时浏览器使用的编码类型,默认值是application/x-www-form-urlencoded -->
+    <form class=" form-horizontal" action="/ClassInfo/doEditClassInfo" method="POST" enctype="application/x-www-form-urlencoded">
+        <!-- 编辑成功后重定向到当前页面 -->
+        <input type="hidden" value="{{callBackUrl}}" name="callBackUrl">
+        <div class=" form-group">
+            <label class=" control-label col-sm-3">班级名称</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入班级名称" value="{{classInfo.cname}}" name="cname">
+            </div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-3">所属院系</label>
+            <div class=" col-sm-7">
+                <select class="form-control" name="snation">
+                    {{each departmentInfoList item index}}
+                    <option value="{{item.did}}" {{item.did==classInfo.did?'selected':null}}>{{item.dname}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-3">所属辅导员</label>
+            <div class=" col-sm-7">
+                <select class="form-control" name="snation">
+                    {{each instructorList item index}}
+                    <option value="{{item.instructorid}}" {{item.instructorid==classInfo.instructorid?'selected':null}}>{{item.instructorname}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+        <div class=" form-group">
+            <label class=" control-label col-sm-3">最大人数</label>
+            <div class=" col-sm-7">
+                <input type="text" class=" form-control" placeholder="请输入最大人数" value="{{classInfo.maxCount}}"
+                    name="maxCount">
+            </div>
+        </div>
+        <div class=" form-group">
+            <div class=" col-sm-7 col-sm-offset-3">
+                <button type="submit" class=" btn btn-primary" id="btnSave">
+                    <span class=" glyphicon glyphicon-floppy-save"></span> 保存数据
+                </button>
+                <a href="{{callBackUrl||'/classInfo/List'}}" class=" btn btn-danger">
+                    <span class=" glyphicon glyphicon-arrow-left"></span> 返回列表
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+{{include "../layout_footer.html"}}
